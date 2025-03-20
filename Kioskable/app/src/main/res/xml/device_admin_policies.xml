@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<device-admin xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-policies>
+        <!-- Force lock mode to enable kiosk mode -->
+        <force-lock />
+        <!-- Wipe data permission (for enhanced security) -->
+        <wipe-data />
+        <!-- Reset password permission -->
+        <reset-password />
+        <!-- Lock task mode (pinning) permissions -->
+        <lock-task />
+        <!-- Control screen timeout and brightness -->
+        <watch-login />
+        <!-- Control application installation -->
+        <disable-camera />
+    </uses-policies>
+</device-admin> 

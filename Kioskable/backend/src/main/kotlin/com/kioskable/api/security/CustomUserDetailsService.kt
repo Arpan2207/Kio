@@ -15,13 +15,27 @@ class CustomUserDetailsService(
     
     override fun loadUserByUsername(username: String): UserDetails {
         val user = userRepository.findByEmail(username)
-            .orElseThrow { UsernameNotFoundException("User not found with email: $username") }
+            ?: throw UsernameNotFoundException("User not found with email: $username")
         
-        val authorities = listOf(SimpleGrantedAuthority("ROLE_${user.role.name}"))
+        // If user is disabled, don't allow login
+        if (!user.isEnabled) {
+            throw UsernameNotFoundException("User account is disabled")
+        }
+        
+        // Create authorities from user role and permissions
+        val authorities = mutableListOf<SimpleGrantedAuthority>()
+        
+        // Add role-based authority
+        authorities.add(SimpleGrantedAuthority("ROLE_${user.role.name}"))
+        
+        // Add permission-based authorities
+        user.permissions.forEach { permission ->
+            authorities.add(SimpleGrantedAuthority(permission))
+        }
         
         return User(
             user.email,
-            user.passwordHash,
+            user.password,
             authorities
         )
     }

@@ -4,6 +4,13 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    
+    <!-- Permissions for Kiosk Mode -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
 
     <application
         android:name=".application.App"
@@ -28,6 +35,43 @@
         
         <activity
             android:name=".ui.main.MainActivity"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:lockTaskMode="if_whitelisted"
+            android:screenOrientation="fullSensor" />
+            
+        <!-- Device Admin Receiver -->
+        <receiver
+            android:name=".service.kiosk.KioskDeviceAdminReceiver"
+            android:description="@string/app_name"
+            android:exported="true"
+            android:permission="android.permission.BIND_DEVICE_ADMIN">
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/device_admin_policies" />
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+                <action android:name="android.app.action.DEVICE_ADMIN_DISABLED" />
+                <action android:name="android.app.action.LOCK_TASK_ENTERING" />
+                <action android:name="android.app.action.LOCK_TASK_EXITING" />
+            </intent-filter>
+        </receiver>
+        
+        <!-- Boot Receiver -->
+        <receiver
+            android:name=".service.kiosk.BootReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
+        
+        <!-- Kiosk Service -->
+        <service
+            android:name=".service.kiosk.KioskService"
+            android:enabled="true"
             android:exported="false" />
             
     </application>
