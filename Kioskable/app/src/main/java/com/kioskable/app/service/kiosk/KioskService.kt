@@ -16,6 +16,7 @@ import android.os.IBinder
 import android.os.PowerManager
 import androidx.core.app.NotificationCompat
 import com.kioskable.app.R
+import com.kioskable.app.ui.display.ContentDisplayActivity
 import com.kioskable.app.ui.main.MainActivity
 import timber.log.Timber
 import java.util.Timer
@@ -148,10 +149,10 @@ class KioskService : Service() {
     }
     
     /**
-     * Launches the main activity to restore kiosk mode
+     * Launches the content display activity to restore kiosk mode
      */
     private fun launchHomeActivity() {
-        val intent = Intent(this, MainActivity::class.java).apply {
+        val intent = Intent(this, ContentDisplayActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)

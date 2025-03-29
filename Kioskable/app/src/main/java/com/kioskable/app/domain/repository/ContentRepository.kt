@@ -1,19 +1,32 @@
 package com.kioskable.app.domain.repository
 
-import com.kioskable.app.data.local.db.entity.ContentEntity
+import com.kioskable.app.domain.model.Content
 import com.kioskable.app.domain.model.Result
 import kotlinx.coroutines.flow.Flow
 
 interface ContentRepository {
-    suspend fun getContent(page: Int, size: Int): Result<List<ContentEntity>>
+    /**
+     * Get all content with pagination
+     */
+    suspend fun getAllContent(page: Int, size: Int): Result<List<Content>>
     
-    fun observeAllContent(): Flow<List<ContentEntity>>
+    /**
+     * Get active content with pagination
+     */
+    suspend fun getActiveContent(page: Int, size: Int): Result<List<Content>>
     
-    fun observeActiveContent(): Flow<List<ContentEntity>>
+    /**
+     * Get currently scheduled content
+     */
+    suspend fun getScheduledContent(page: Int, size: Int): Result<List<Content>>
     
-    suspend fun getContentById(contentId: String): Result<ContentEntity?>
+    /**
+     * Get content by ID
+     */
+    suspend fun getContentById(id: String): Result<Content>
     
-    suspend fun refreshContent(page: Int, size: Int): Result<Unit>
-    
-    suspend fun clearContentCache(): Result<Unit>
+    /**
+     * Get flow of active and scheduled content for display
+     */
+    fun observeDisplayContent(): Flow<List<Content>>
 } 

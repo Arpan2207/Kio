@@ -16,6 +16,15 @@ An Android application that transforms standard devices—tablets, TVs, or touch
 - MongoDB
 - Git
 
+### Android Version Support
+
+**Current Target:**
+- Minimum SDK: 26 (Android 8.0 Oreo)
+- Target SDK: 34
+- Compile SDK: 35
+
+> **Note:** The app currently only supports Android 8.0+ devices to utilize adaptive icons and other modern Android features. Support for older versions may be added in future releases.
+
 ### Backend Setup
 
 1. Navigate to the backend directory:

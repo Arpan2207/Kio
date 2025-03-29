@@ -4,13 +4,24 @@ import android.content.SharedPreferences
 import com.kioskable.app.data.local.db.dao.ContentDao
 import com.kioskable.app.data.local.db.entity.ContentEntity
 import com.kioskable.app.data.remote.api.ApiService
+import com.kioskable.app.data.remote.api.ContentApiService
+import com.kioskable.app.data.remote.dto.toContent
+import com.kioskable.app.domain.model.Content
 import com.kioskable.app.domain.model.Result
 import com.kioskable.app.domain.repository.ContentRepository
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.withContext
+import retrofit2.HttpException
 import java.io.IOException
-import kotlin.coroutines.cancellation.CancellationException
+import javax.inject.Inject
 
-class ContentRepositoryImpl(
+class ContentRepositoryImpl @Inject constructor(
+    private val contentApiService: ContentApiService,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val apiService: ApiService,
     private val contentDao: ContentDao,
     private val sharedPreferences: SharedPreferences
@@ -19,6 +30,68 @@ class ContentRepositoryImpl(
     companion object {
         private const val KEY_AUTH_TOKEN = "auth_token"
     }
+    
+    override suspend fun getAllContent(page: Int, size: Int): Result<List<Content>> = withContext(ioDispatcher) {
+        try {
+            val response = contentApiService.getAllContent(page, size)
+            Result.Success(response.content.map { it.toContent() })
+        } catch (e: HttpException) {
+            Result.Error(e.message ?: "HTTP Error")
+        } catch (e: IOException) {
+            Result.Error("Network Error: ${e.message}")
+        } catch (e: Exception) {
+            Result.Error("Unknown Error: ${e.message}")
+        }
+    }
+    
+    override suspend fun getActiveContent(page: Int, size: Int): Result<List<Content>> = withContext(ioDispatcher) {
+        try {
+            val response = contentApiService.getActiveContent(page, size)
+            Result.Success(response.content.map { it.toContent() })
+        } catch (e: HttpException) {
+            Result.Error(e.message ?: "HTTP Error")
+        } catch (e: IOException) {
+            Result.Error("Network Error: ${e.message}")
+        } catch (e: Exception) {
+            Result.Error("Unknown Error: ${e.message}")
+        }
+    }
+    
+    override suspend fun getScheduledContent(page: Int, size: Int): Result<List<Content>> = withContext(ioDispatcher) {
+        try {
+            val response = contentApiService.getScheduledContent(page, size)
+            Result.Success(response.content.map { it.toContent() })
+        } catch (e: HttpException) {
+            Result.Error(e.message ?: "HTTP Error")
+        } catch (e: IOException) {
+            Result.Error("Network Error: ${e.message}")
+        } catch (e: Exception) {
+            Result.Error("Unknown Error: ${e.message}")
+        }
+    }
+    
+    override suspend fun getContentById(id: String): Result<Content> = withContext(ioDispatcher) {
+        try {
+            val response = contentApiService.getContentById(id)
+            Result.Success(response.toContent())
+        } catch (e: HttpException) {
+            Result.Error(e.message ?: "HTTP Error")
+        } catch (e: IOException) {
+            Result.Error("Network Error: ${e.message}")
+        } catch (e: Exception) {
+            Result.Error("Unknown Error: ${e.message}")
+        }
+    }
+    
+    override fun observeDisplayContent(): Flow<List<Content>> = flow {
+        try {
+            val response = contentApiService.getScheduledContent(0, 100)
+            emit(response.content.map { it.toContent() })
+        } catch (e: Exception) {
+            // In case of error, emit empty list
+            emit(emptyList())
+        }
+    }.flowOn(ioDispatcher)
     
     override suspend fun getContent(page: Int, size: Int): Result<List<ContentEntity>> {
         return try {
@@ -33,8 +106,6 @@ class ContentRepositoryImpl(
             } else {
                 Result.Success(localContent)
             }
-        } catch (e: CancellationException) {
-            throw e
         } catch (e: Exception) {
             Result.Error("Failed to get content: ${e.message}")
         }
@@ -46,15 +117,6 @@ class ContentRepositoryImpl(
     
     override fun observeActiveContent(): Flow<List<ContentEntity>> {
         return contentDao.getActiveContent()
-    }
-    
-    override suspend fun getContentById(contentId: String): Result<ContentEntity?> {
-        return try {
-            val content = contentDao.getContentById(contentId)
-            Result.Success(content)
-        } catch (e: Exception) {
-            Result.Error("Failed to get content: ${e.message}")
-        }
     }
     
     override suspend fun refreshContent(page: Int, size: Int): Result<Unit> {
@@ -69,10 +131,6 @@ class ContentRepositoryImpl(
             contentDao.insertAllContent(contentEntities)
             
             Result.Success(Unit)
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: IOException) {
-            Result.Error("Network error: ${e.message}")
         } catch (e: Exception) {
             Result.Error("Failed to refresh content: ${e.message}")
         }
@@ -86,4 +144,5 @@ class ContentRepositoryImpl(
             Result.Error("Failed to clear content cache: ${e.message}")
         }
     }
+} 
 } 

@@ -40,6 +40,28 @@
             android:lockTaskMode="if_whitelisted"
             android:screenOrientation="fullSensor" />
             
+        <!-- Content Display Activity for Kiosk Mode -->
+        <activity
+            android:name=".ui.display.ContentDisplayActivity"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:lockTaskMode="if_whitelisted"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.Kioskable.Fullscreen" />
+            
+        <!-- Content Management Activity -->
+        <activity
+            android:name=".ui.admin.content.ContentManagementActivity"
+            android:exported="false"
+            android:label="Content Management" />
+            
+        <!-- Content Editor Activity -->
+        <activity
+            android:name=".ui.admin.content.ContentEditorActivity"
+            android:exported="false"
+            android:label="Content Editor"
+            android:windowSoftInputMode="adjustResize" />
+            
         <!-- Device Admin Receiver -->
         <receiver
             android:name=".service.kiosk.KioskDeviceAdminReceiver"
