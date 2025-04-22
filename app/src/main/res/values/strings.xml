@@ -1,3 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Kio</string>
-</resources>
+    <string name="app_name">Kioskable</string>
+    
+    <!-- Login Screen -->
+    <string name="login_title">Login</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password</string>
+    <string name="login_button">Login</string>
+    <string name="login_error">Login failed. Please check your credentials.</string>
+    
+    <!-- Main Screen -->
+    <string name="main_title">Kioskable</string>
+    <string name="display_module">Display</string>
+    <string name="explore_module">Explore</string>
+    <string name="ordering_module">Order</string>
+    <string name="staff_module">Staff</string>
+</resources> 
